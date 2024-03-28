@@ -1,4 +1,7 @@
-export type ModelName = "yolov8n" | "yolov8s";
+export enum MODELS {
+  YOLOv8n = "yolov8n",
+  YOLOv8s = "yolov8s",
+}
 
 export type Box = {
   height: number;
@@ -8,15 +11,16 @@ export type Box = {
 };
 
 export interface LoadModelPayload {
-  model_name: ModelName;
+  model_name: MODELS;
 }
 
-export interface DetectResponse {
+export interface DetectedItem {
   box: Box;
   class_name: string;
   confidence: number;
 }
 
+export type DetectResponse = DetectedItem[];
 export interface DetectPayload {
   image_path: string;
   confidence: number;
