@@ -1,3 +1,6 @@
+import html2canvas from "html2canvas";
+import { ChangeEvent } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,12 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import { useAppActions, useVideoInstance } from "@/lib/state";
-import { useToast } from "../ui/use-toast";
-import html2canvas from "html2canvas";
-import { Label } from "../ui/label";
-import { ChangeEvent } from "react";
 
 function VideoForm() {
   const { toast } = useToast();
@@ -41,19 +42,13 @@ function VideoForm() {
         throw Error("The video instance is empty");
       }
 
-      const videoEl = videoInstance.getInternalPlayer() as HTMLVideoElement;
-
-      if (!videoEl.src) {
+      if (!videoInstance.src) {
         throw Error("You need to load a video first");
       }
 
-      const canvas = await html2canvas(videoEl);
+      const canvas = await html2canvas(videoInstance);
       const img = canvas.toDataURL("image/jpeg");
-      setCapturedImage({
-        src: img,
-        width: canvas.width,
-        height: canvas.height,
-      });
+      setCapturedImage(img);
     } catch (err) {
       toast({
         variant: "destructive",

@@ -27,8 +27,18 @@ export interface DetectPayload {
   iou: number;
 }
 
-export type CapturedImage = {
-  src: string;
+export type Dimensions = {
   width: number;
   height: number;
+};
+
+export enum TABS_NAMES {
+  main = "MAIN",
+  results = "RESULTS",
+}
+
+export type CreateLabeledImageProps = {
+  imgSrc: string;
+  items: DetectedItem[];
+  dimensions: Dimensions;
 };

@@ -1,8 +1,8 @@
 import { type ClassValue, clsx } from "clsx";
 import { Canvas, FabricImage, Rect, Group, FabricText } from "fabric";
-
 import { twMerge } from "tailwind-merge";
-import type { CapturedImage, DetectedItem } from "./api.types";
+
+import type { CreateLabeledImageProps, DetectedItem } from "./app.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -32,19 +32,34 @@ const createABox = (item: DetectedItem) => {
 
   // Group the rectangle and text for easier manipulation
   const group = new Group([rect, text]);
+
   return group;
 };
 
-export const createCanvasWithImageAndBoxes = async (
-  img: CapturedImage,
-  items: DetectedItem[]
-) => {
-  const canvas = new Canvas("myCanvas");
-  const test = await FabricImage.fromObject(img);
-  canvas.add(test);
-  for (const item of items) {
-    const group = createABox(item);
-    canvas.add(group);
+export const createLabeledImage = async ({
+  dimensions,
+  imgSrc,
+  items,
+}: CreateLabeledImageProps) => {
+  try {
+    const canvas = document.createElement("canvas");
+    const fabricCanvas = new Canvas(canvas, dimensions);
+    const fabricImage = await FabricImage.fromURL(imgSrc);
+    fabricCanvas.add(fabricImage);
+
+    for (const item of items) {
+      const group = createABox(item);
+      fabricCanvas.add(group);
+    }
+
+    fabricCanvas.renderAll();
+    const labeledImage = fabricCanvas.toDataURL({
+      format: "jpeg",
+      multiplier: 1,
+    });
+
+    return labeledImage;
+  } catch (err) {
+    throw Error(`Error on create labeled image: ${err}`);
   }
-  canvas.renderAll();
 };

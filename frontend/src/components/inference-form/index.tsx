@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { inferenceFormSchema, type InferenceFormValues } from "./schema";
-import { HookedInput } from "../ui/hooked-input";
+import { HookedInput } from "@/components/ui/hooked-input";
+import { useToast } from "@/components/ui/use-toast";
+import { TABS_NAMES } from "@/lib/app.types";
 import { runDetect, uploadImage } from "@/lib/mutations";
-import { useToast } from "../ui/use-toast";
-import { useCapturedImage } from "@/lib/state";
-import { createCanvasWithImageAndBoxes } from "@/lib/utils";
-import { useState } from "react";
+import { useAppActions, useCapturedImage, useDimensions } from "@/lib/state";
+import { createLabeledImage } from "@/lib/utils";
+import { inferenceFormSchema, type InferenceFormValues } from "./schema";
 
 const defaultValues: InferenceFormValues = {
   confidence: 0.7,
@@ -27,7 +28,11 @@ const defaultValues: InferenceFormValues = {
 
 function InferenceForm() {
   const capturedImage = useCapturedImage();
+  const dimensions = useDimensions();
+  const { setLabeledImage, setSelectedTab } = useAppActions();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
   const methods = useForm({
     resolver: zodResolver(inferenceFormSchema),
     defaultValues,
@@ -40,7 +45,6 @@ function InferenceForm() {
     mutationKey: ["uploadImage"],
     mutationFn: uploadImage,
   });
-  const [loading, setLoading] = useState(false);
 
   const onSubmit = methods.handleSubmit(async ({ confidence, iou }) => {
     setLoading(true);
@@ -49,7 +53,7 @@ function InferenceForm() {
         throw Error("You need to capture an image first");
       }
       // pass the objectURL to blob
-      const blob = await fetch(capturedImage.src).then((r) => r.blob());
+      const blob = await fetch(capturedImage).then((r) => r.blob());
       // create a file
       const file = new File([blob], "capture.jpeg", { type: "image/jpeg" });
       // create a form
@@ -61,7 +65,13 @@ function InferenceForm() {
         iou,
         image_path: filePath,
       });
-      await createCanvasWithImageAndBoxes(capturedImage, response);
+      const labeledImage = await createLabeledImage({
+        dimensions,
+        imgSrc: capturedImage,
+        items: response,
+      });
+      setLabeledImage(labeledImage);
+      setSelectedTab(TABS_NAMES.results);
       toast({
         title: "Success",
         description: `${response.length} objects detected`,

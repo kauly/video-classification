@@ -1,4 +1,3 @@
-import ReactPlayer from "react-player/file";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -6,18 +5,26 @@ import { immer } from "zustand/middleware/immer";
 import { castDraft } from "immer";
 
 import demoVideo from "@/assets/demo-video.mp4";
-import type { CapturedImage } from "./api.types";
+import { TABS_NAMES } from "./app.types";
+
+import type { Dimensions } from "./app.types";
 
 type AppState = {
   videoUrl: string;
-  capturedImage?: CapturedImage;
-  videoInstance?: ReactPlayer;
+  capturedImage?: string;
+  labeledImage?: string;
+  videoInstance?: HTMLVideoElement;
+  selectedTab: TABS_NAMES;
+  dimensions: Dimensions;
 };
 
 type AppActions = {
-  setVideoInstance: (payload: ReactPlayer) => void;
+  setVideoInstance: (payload: HTMLVideoElement) => void;
   setVideoUrl: (payload: string) => void;
-  setCapturedImage: (payload: CapturedImage) => void;
+  setCapturedImage: (payload: string) => void;
+  setLabeledImage: (payload: string) => void;
+  setSelectedTab: (payload: TABS_NAMES) => void;
+  setDimensions: (payload: Dimensions) => void;
 };
 
 type AppStore = {
@@ -25,9 +32,15 @@ type AppStore = {
 } & AppState;
 
 const initialState: AppState = {
+  selectedTab: TABS_NAMES.main,
   videoUrl: demoVideo,
+  dimensions: {
+    height: 0,
+    width: 0,
+  },
   capturedImage: undefined,
   videoInstance: undefined,
+  labeledImage: undefined,
 };
 
 const useAppStore = create<AppStore>()(
@@ -48,6 +61,21 @@ const useAppStore = create<AppStore>()(
           state.videoUrl = payload;
         });
       },
+      setLabeledImage: (payload) => {
+        set((state) => {
+          state.labeledImage = payload;
+        });
+      },
+      setSelectedTab: (payload) => {
+        set((state) => {
+          state.selectedTab = payload;
+        });
+      },
+      setDimensions: (payload) => {
+        set((state) => {
+          state.dimensions = payload;
+        });
+      },
     },
   }))
 );
@@ -56,5 +84,16 @@ const useAppActions = () => useAppStore((state) => state.actions);
 const useVideoUrl = () => useAppStore((state) => state.videoUrl);
 const useCapturedImage = () => useAppStore((state) => state.capturedImage);
 const useVideoInstance = () => useAppStore((state) => state.videoInstance);
+const useLabeledImage = () => useAppStore((state) => state.labeledImage);
+const useSelectedTab = () => useAppStore((state) => state.selectedTab);
+const useDimensions = () => useAppStore((state) => state.dimensions);
 
-export { useAppActions, useVideoInstance, useCapturedImage, useVideoUrl };
+export {
+  useAppActions,
+  useVideoInstance,
+  useCapturedImage,
+  useVideoUrl,
+  useLabeledImage,
+  useSelectedTab,
+  useDimensions,
+};

@@ -2,7 +2,7 @@ import type {
   DetectPayload,
   DetectResponse,
   LoadModelPayload,
-} from "./api.types";
+} from "./app.types";
 
 const endpoint = import.meta.env.VITE_API_ENDPOINT;
 

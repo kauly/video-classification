@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { modelFormSchema } from "./schema";
 import { HookedSelect, SelectOption } from "../ui/hooked-select";
-import { MODELS } from "@/lib/api.types";
+import { MODELS } from "@/lib/app.types";
 import { setModel } from "@/lib/mutations";
 import { useToast } from "../ui/use-toast";
 import { Label } from "@radix-ui/react-label";

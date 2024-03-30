@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { MODELS } from "@/lib/api.types";
+import { MODELS } from "@/lib/app.types";
 
 const modelFormSchema = z.object({
   model_name: z.nativeEnum(MODELS, {
