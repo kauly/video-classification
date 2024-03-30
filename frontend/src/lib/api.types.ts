@@ -26,3 +26,9 @@ export interface DetectPayload {
   confidence: number;
   iou: number;
 }
+
+export type CapturedImage = {
+  src: string;
+  width: number;
+  height: number;
+};

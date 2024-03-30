@@ -11,7 +11,7 @@ function CapturedImage() {
       </CardHeader>
       <CardContent>
         {capturedImage ? (
-          <img src={capturedImage} alt="Captured Image" />
+          <img src={capturedImage.src} alt="Captured Image" />
         ) : (
           <Label>
             Click on the "Capture a frame" button to display an image here

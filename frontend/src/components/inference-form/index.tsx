@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/card";
 import { inferenceFormSchema, type InferenceFormValues } from "./schema";
 import { HookedInput } from "../ui/hooked-input";
-import { runDetect } from "@/lib/mutations";
+import { runDetect, uploadImage } from "@/lib/mutations";
 import { useToast } from "../ui/use-toast";
+import { useCapturedImage } from "@/lib/state";
+import { createCanvasWithImageAndBoxes } from "@/lib/utils";
+import { useState } from "react";
 
 const defaultValues: InferenceFormValues = {
   confidence: 0.7,
@@ -23,33 +26,53 @@ const defaultValues: InferenceFormValues = {
 };
 
 function InferenceForm() {
+  const capturedImage = useCapturedImage();
+  const { toast } = useToast();
   const methods = useForm({
     resolver: zodResolver(inferenceFormSchema),
     defaultValues,
   });
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync: runDetectAsync } = useMutation({
     mutationKey: ["runDetect"],
     mutationFn: runDetect,
   });
-  const { toast } = useToast();
+  const { mutateAsync: uploadImageAsync } = useMutation({
+    mutationKey: ["uploadImage"],
+    mutationFn: uploadImage,
+  });
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = methods.handleSubmit(async ({ confidence, iou }) => {
+    setLoading(true);
     try {
-      const response = await mutateAsync({
+      if (!capturedImage) {
+        throw Error("You need to capture an image first");
+      }
+      // pass the objectURL to blob
+      const blob = await fetch(capturedImage.src).then((r) => r.blob());
+      // create a file
+      const file = new File([blob], "capture.jpeg", { type: "image/jpeg" });
+      // create a form
+      const form = new FormData();
+      form.append("file", file);
+      const filePath = await uploadImageAsync(form);
+      const response = await runDetectAsync({
         confidence,
         iou,
-        image_path: "/app/test/bus.jpg",
+        image_path: filePath,
       });
+      await createCanvasWithImageAndBoxes(capturedImage, response);
       toast({
         title: "Success",
         description: `${response.length} objects detected`,
       });
-      console.log("🚀 ~ onSubmit ~ response:", response);
     } catch (e) {
       toast({
         description: `Error: ${e}`,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   });
 
@@ -68,10 +91,8 @@ function InferenceForm() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button type="submit" disabled={isPending}>
-              {isPending && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
+            <Button type="submit" disabled={loading}>
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
               Run
             </Button>
           </CardFooter>

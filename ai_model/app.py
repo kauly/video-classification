@@ -7,8 +7,12 @@ from dataclasses import dataclass
 from flask import Flask, request, jsonify
 from smart_open import open
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = "images/"
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+
 CORS(app)
 
 
@@ -146,6 +150,19 @@ def load_model():
     global model
     model = Model(model_name)
     return f"Model {model_name} is loaded"
+
+
+@app.route("/upload", methods=["POST"])
+def upload_img():
+    file = request.files.get("file")
+    print(f"File: {file}")
+    if not file:
+        return "Error: No file uploaded!", 500
+
+    file_name = file.filename
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
+    file.save(file_path)
+    return file_path
 
 
 if __name__ == "__main__":

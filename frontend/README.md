@@ -3,3 +3,4 @@ https://www.youtube.com/watch?v=AwrYfWEZJGI
 https://www.youtube.com/watch?v=zShcZJZmoyw
 docker logs -f --tail 10 container_name
 docker rm -f container_name
+docker build -t overview-backend ai_model

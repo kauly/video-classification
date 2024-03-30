@@ -6,17 +6,18 @@ import { immer } from "zustand/middleware/immer";
 import { castDraft } from "immer";
 
 import demoVideo from "@/assets/demo-video.mp4";
+import type { CapturedImage } from "./api.types";
 
 type AppState = {
   videoUrl: string;
-  capturedImage?: string;
+  capturedImage?: CapturedImage;
   videoInstance?: ReactPlayer;
 };
 
 type AppActions = {
   setVideoInstance: (payload: ReactPlayer) => void;
   setVideoUrl: (payload: string) => void;
-  setCapturedImage: (payload: string) => void;
+  setCapturedImage: (payload: CapturedImage) => void;
 };
 
 type AppStore = {
@@ -25,7 +26,7 @@ type AppStore = {
 
 const initialState: AppState = {
   videoUrl: demoVideo,
-  capturedImage: "",
+  capturedImage: undefined,
   videoInstance: undefined,
 };
 

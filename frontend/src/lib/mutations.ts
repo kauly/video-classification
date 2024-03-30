@@ -14,9 +14,11 @@ const setModel = async (payload: LoadModelPayload) => {
     },
     body: JSON.stringify(payload),
   });
+
   if (!response.ok) {
     throw new Error("Error on set the model");
   }
+
   return response.text();
 };
 
@@ -28,12 +30,27 @@ const runDetect = async (payload: DetectPayload): Promise<DetectResponse> => {
     },
     body: JSON.stringify(payload),
   });
+
   if (!response.ok) {
     throw new Error("Error on detect");
   }
   const res = await response.json();
-  console.log("🚀 ~ runDetect ~ res:", res);
+
   return res;
 };
 
-export { setModel, runDetect };
+const uploadImage = async (payload: FormData): Promise<string> => {
+  const response = await fetch(`${endpoint}/upload`, {
+    method: "POST",
+    body: payload,
+  });
+
+  if (!response.ok) {
+    throw new Error("Error on upload image");
+  }
+  const res = await response.text();
+
+  return res;
+};
+
+export { setModel, runDetect, uploadImage };

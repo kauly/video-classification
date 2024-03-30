@@ -49,9 +49,12 @@ function VideoForm() {
 
       const canvas = await html2canvas(videoEl);
       const img = canvas.toDataURL("image/jpeg");
-      setCapturedImage(img);
+      setCapturedImage({
+        src: img,
+        width: canvas.width,
+        height: canvas.height,
+      });
     } catch (err) {
-      console.error(err);
       toast({
         variant: "destructive",
         title: "Error",
