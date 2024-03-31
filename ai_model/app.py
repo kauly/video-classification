@@ -9,7 +9,7 @@ from typing import List
 from dataclasses import dataclass
 from flask import request, jsonify
 from config import app, db
-from db_models import PredictionModel, BoxModel
+from db_models import InputModel, PredictionModel, BoxModel, ResultModel
 
 
 @dataclass
@@ -130,6 +130,7 @@ def detect():
 
     predictions = model(original_img, confidence, iou)
     detections = [p.to_dict() for p in predictions]
+    predictions_model = []
 
     if len(predictions) > 0:
         for pred in detections:
@@ -143,11 +144,17 @@ def detect():
             new_pred = PredictionModel(
                 class_name=pred.get("class_name"),
                 confidence=pred.get("confidence"),
-                image_path=image_path,
                 box=box,
             )
-            db.session.add(new_pred)
-        db.session.commit()
+            predictions_model.append(new_pred)
+
+    input = InputModel(iou=iou, confidence=confidence)
+    result = ResultModel(
+        input=input, image_path=image_path, predictions=predictions_model
+    )
+
+    db.session.add(result)
+    db.session.commit()
 
     return jsonify(detections)
 
@@ -174,15 +181,15 @@ def upload_img():
     if not file:
         return "Error: No file uploaded!", 500
 
-    file_name = uuid4()
+    file_name = f"{uuid4()}"
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
     file.save(file_path)
     return file_path
 
 
-@app.route("/predictions", methods=["GET"])
-def predictions():
-    result = PredictionModel.query.all()
+@app.route("/results", methods=["GET"])
+def results():
+    result = ResultModel.query.all()
     print(result)
     return jsonify([r.to_dict() for r in result])
 

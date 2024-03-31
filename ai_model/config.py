@@ -4,6 +4,8 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+CORS(app)
+
 app.config["UPLOAD_FOLDER"] = "images/"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -18,5 +20,3 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 )
 
 db = SQLAlchemy(app)
-
-CORS(app)
