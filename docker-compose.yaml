@@ -1,0 +1,40 @@
+services:
+  db:
+    container_name: ai_model_db
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # used in flask container depends_on condition to wait for the DB to be ready
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+  
+  ai_model:
+    container_name: ai_model
+    build:
+      context: ./ai_model
+      dockerfile: ./Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+    command: sh -c "python app.py"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata: {}

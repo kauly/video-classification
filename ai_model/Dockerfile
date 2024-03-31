@@ -22,5 +22,3 @@ COPY . .
 # Expose the port on which the app will run
 EXPOSE 5000
 
-# Define the command to run the app
-CMD ["python", "app.py"]

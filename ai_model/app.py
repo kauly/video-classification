@@ -1,19 +1,15 @@
+import os
+from uuid import uuid4
 import numpy as np
 import cv2
-from PIL import Image
 import onnxruntime as ort
+from smart_open import open
+from PIL import Image
 from typing import List
 from dataclasses import dataclass
-from flask import Flask, request, jsonify
-from smart_open import open
-from flask_cors import CORS
-import os
-
-app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = "images/"
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
-
-CORS(app)
+from flask import request, jsonify
+from config import app, db
+from db_models import PredictionModel, BoxModel
 
 
 @dataclass
@@ -128,12 +124,31 @@ def detect():
     image_path = request.json["image_path"]
     confidence = request.json["confidence"]
     iou = request.json["iou"]
+
     with open(image_path, "rb") as f:
         original_img = Image.open(f).convert("RGB")
+
     predictions = model(original_img, confidence, iou)
     detections = [p.to_dict() for p in predictions]
-    print(f"Image path: {image_path}")
-    print(f"Detections: {detections}")
+
+    if len(predictions) > 0:
+        for pred in detections:
+            bbox = pred.get("box")
+            box = BoxModel(
+                top=bbox.get("top"),
+                left=bbox.get("left"),
+                width=bbox.get("width"),
+                height=bbox.get("height"),
+            )
+            new_pred = PredictionModel(
+                class_name=pred.get("class_name"),
+                confidence=pred.get("confidence"),
+                image_path=image_path,
+                box=box,
+            )
+            db.session.add(new_pred)
+        db.session.commit()
+
     return jsonify(detections)
 
 
@@ -159,11 +174,20 @@ def upload_img():
     if not file:
         return "Error: No file uploaded!", 500
 
-    file_name = file.filename
+    file_name = uuid4()
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
     file.save(file_path)
     return file_path
 
 
+@app.route("/predictions", methods=["GET"])
+def predictions():
+    result = PredictionModel.query.all()
+    print(result)
+    return jsonify([r.to_dict() for r in result])
+
+
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(host="0.0.0.0", debug=True)
