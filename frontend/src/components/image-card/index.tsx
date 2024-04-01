@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useDimensions } from "@/lib/state";
 
 type ImageCardProps = {
   title: string;
@@ -9,16 +8,12 @@ type ImageCardProps = {
 };
 
 function ImageCard({ description, title, imgSrc }: ImageCardProps) {
-  const dimensions = useDimensions();
-
   return (
-    <Card>
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent
-        className={`w-full h-full md:w-[${dimensions.width}px] md:h-[${dimensions.height}px]`}
-      >
+      <CardContent>
         {imgSrc ? (
           <img src={imgSrc} alt={title} />
         ) : (

@@ -1,8 +1,14 @@
-import { useCallback } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import ReactPlayer from "react-player/file";
 
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAppActions, useVideoUrl } from "@/lib/state";
+
+const Wrapper = ({ children }: PropsWithChildren) => (
+  <div className="aspect-video md:aspect-none md:w-[760px] md:h-[340px]">
+    {children}
+  </div>
+);
 
 function VideoPlayer() {
   const videoUrl = useVideoUrl();
@@ -12,7 +18,6 @@ function VideoPlayer() {
     (node: ReactPlayer) => {
       if (node) {
         const videoTag = node.getInternalPlayer() as HTMLVideoElement;
-        console.log("🚀 ~ VideoPlayer ~ videoTag:", videoTag);
         setDimensions({
           height: videoTag.clientHeight,
           width: videoTag.clientWidth,
@@ -24,10 +29,19 @@ function VideoPlayer() {
   );
 
   return (
-    <Card className="p-4">
-      <div className="aspect-w-16 aspect-h-9 md:aspect-none">
-        <ReactPlayer controls url={videoUrl} ref={getInstance} />
-      </div>
+    <Card className="w-full h-full pt-4">
+      <CardContent>
+        <div className="player-wrapper">
+          <ReactPlayer
+            controls
+            className="react-player"
+            width="100%"
+            height="100%"
+            url={videoUrl}
+            ref={getInstance}
+          />
+        </div>
+      </CardContent>
     </Card>
   );
 }

@@ -88,7 +88,7 @@ function InferenceForm() {
 
   return (
     <FormProvider {...methods}>
-      <Card className="w-[350px]">
+      <Card className="w-full md:w-[350px]">
         <CardHeader>
           <CardTitle>Model Parameters</CardTitle>
           <CardDescription>Model tunning options.</CardDescription>

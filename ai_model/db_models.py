@@ -1,6 +1,7 @@
 import uuid
 import sqlalchemy as sa
 from config import db
+from datetime import datetime
 
 
 class InputModel(db.Model):
@@ -37,6 +38,7 @@ class PredictionModel(db.Model):
             "id": self.id,
             "class_name": self.class_name,
             "confidence": self.confidence,
+            "result_id": self.result_id,
             "box": self.box.to_dict(),
         }
 
@@ -73,6 +75,7 @@ class ResultModel(db.Model):
 
     id = sa.Column(sa.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     image_path = sa.Column(sa.String(500), nullable=False)
+    created_at = sa.Column(sa.DateTime(), nullable=False, default=datetime.now)
     input = db.relationship("InputModel", uselist=False, backref="result")
     predictions = db.relationship("PredictionModel", backref="result")
 
@@ -80,6 +83,7 @@ class ResultModel(db.Model):
         return {
             "id": self.id,
             "image_path": self.image_path,
+            "created_at": self.created_at.isoformat(),
             "input": self.input.to_dict(),
             "predictions": [p.to_dict() for p in self.predictions],
         }

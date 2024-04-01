@@ -14,16 +14,16 @@ function MainTabs() {
     <Tabs
       value={selectedTab}
       onValueChange={handleChange}
-      className="flex flex-col"
+      className="flex flex-col h-full"
     >
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value={TABS_NAMES.main}>Main</TabsTrigger>
         <TabsTrigger value={TABS_NAMES.results}>Results</TabsTrigger>
       </TabsList>
-      <TabsContent value={TABS_NAMES.main} className="flex">
+      <TabsContent value={TABS_NAMES.main} className="h-full">
         <MainContent />
       </TabsContent>
-      <TabsContent value={TABS_NAMES.results}>
+      <TabsContent value={TABS_NAMES.results} className="h-full">
         <ResultContent />
       </TabsContent>
     </Tabs>

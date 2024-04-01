@@ -53,7 +53,7 @@ function ModelForm() {
 
   return (
     <FormProvider {...methods}>
-      <Card className="w-[350px]">
+      <Card className="w-full md:w-[350px]">
         <CardHeader>
           <CardTitle>Select a Model</CardTitle>
           <CardDescription>

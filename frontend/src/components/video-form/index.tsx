@@ -59,7 +59,7 @@ function VideoForm() {
   };
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-full md:w-[350px]">
       <CardHeader>
         <CardTitle>Video and Capture</CardTitle>
       </CardHeader>

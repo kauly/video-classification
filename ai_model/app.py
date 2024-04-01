@@ -189,8 +189,7 @@ def upload_img():
 
 @app.route("/results", methods=["GET"])
 def results():
-    result = ResultModel.query.all()
-    print(result)
+    result = ResultModel.query.order_by("created_at").limit(10)
     return jsonify([r.to_dict() for r in result])
 
 
