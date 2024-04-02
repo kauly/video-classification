@@ -1,10 +1,20 @@
 # Full-stack take-home test for Overview.ai
 
+## Running the project
+
+To run the project it's necessary to create the containers and them the frontend will be available at `http://localhost:3000/`.
+
+```shell
+docker compose up
+```
+
 ## Overview
+
 This project is a full-stack application that showcases an AI object detection model's predictions through a user-friendly dashboard. The backend is built with Flask in Python, serving predictions from an ONNX model. The frontend is developed using React and Fabric.js, providing an interactive interface to display the detected objects.
 
 ## The Task
-The task is to create a frontend that interfaces with the backend and plays a video file, sends each frame to the API for prediction, and then shows the results for that frame on the frontend. The interface should have a video player, a configuration area for model settings to be configured (such as IoU and Confidence Level), a preview area where each bounding box returned by the model is drawn on top of the predicted frame (using Fabric.JS), and a table for the last 10 prediction results. You may use any video and any UI framework you like. 
+
+The task is to create a frontend that interfaces with the backend and plays a video file, sends each frame to the API for prediction, and then shows the results for that frame on the frontend. The interface should have a video player, a configuration area for model settings to be configured (such as IoU and Confidence Level), a preview area where each bounding box returned by the model is drawn on top of the predicted frame (using Fabric.JS), and a table for the last 10 prediction results. You may use any video and any UI framework you like.
 
 On the backend, each inference result should be saved to a postgres database. Feel free to add or modify endpoints.
 
@@ -77,8 +87,8 @@ On the backend, each inference result should be saved to a postgres database. Fe
       }
     ]
     ```
-    
 - **Health Check:**
+
   - Endpoint: `/health_check`
   - Method: GET
   - Description: Checks if the model is loaded and returns the status.
@@ -86,7 +96,7 @@ On the backend, each inference result should be saved to a postgres database. Fe
 - **Load Model:**
   - Endpoint: `/load_model`
   - Method: POST
-  - Description: Loads a specified `model_name` for object detection. One of `yolov8n` (nano, faster, less accurate) or `yolov8s` (small, a bit slower and more accurate). 
+  - Description: Loads a specified `model_name` for object detection. One of `yolov8n` (nano, faster, less accurate) or `yolov8s` (small, a bit slower and more accurate).
 
 ## Architecture
 
