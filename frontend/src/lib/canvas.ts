@@ -1,6 +1,11 @@
-import { Rect, Group, FabricText } from "fabric";
+import { Rect, Group, FabricText, FabricImage } from "fabric";
 
-import type { DetectedItem, HandleDetectResponseProps } from "./app.types";
+import type {
+  DetectedItem,
+  GetImageFromVideoProps,
+  GetImageFromVideoReturn,
+  HandleDetectResponseProps,
+} from "./app.types";
 
 const createABox = (item: DetectedItem) => {
   const rect = new Rect({
@@ -40,4 +45,23 @@ const handleDetectResponse = ({ data, canvas }: HandleDetectResponseProps) => {
   canvas.renderAll();
 };
 
-export { handleDetectResponse };
+const getImageFromVideo = ({
+  dimensions,
+  videoInstance,
+}: GetImageFromVideoProps): GetImageFromVideoReturn => {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+    const ctx = canvas.getContext("2d");
+    ctx?.drawImage(videoInstance, 0, 0, dimensions.width, dimensions.height);
+    const canvasImage = new FabricImage(canvas, { ...dimensions });
+    const imgSrc = canvasImage.toDataURL({ format: "jpeg" });
+
+    return { imgSrc, canvasImage };
+  } catch {
+    throw Error("Error on get image from video");
+  }
+};
+
+export { handleDetectResponse, getImageFromVideo };

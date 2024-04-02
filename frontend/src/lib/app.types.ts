@@ -1,13 +1,13 @@
-import { StaticCanvas } from "fabric";
+import { FabricImage, StaticCanvas } from "fabric";
 
 export enum MODELS {
   YOLOv8n = "yolov8n",
   YOLOv8s = "yolov8s",
 }
 
-export enum TABS_NAMES {
-  main = "MAIN",
-  results = "RESULTS",
+export enum WIZARD_TABS {
+  setup = "SETUP",
+  tunning = "TUNNING",
 }
 
 export type Box = {
@@ -15,6 +15,11 @@ export type Box = {
   left: number;
   top: number;
   width: number;
+};
+
+export type TunningOptions = {
+  confidence: number;
+  iou: number;
 };
 
 export type LoadModelPayload = {
@@ -30,19 +35,11 @@ export type DetectedItem = {
 export type DetectResponse = DetectedItem[];
 export type DetectPayload = {
   image_path: string;
-  confidence: number;
-  iou: number;
-};
+} & TunningOptions;
 
 export type Dimensions = {
   width: number;
   height: number;
-};
-
-export type CreateLabeledImageProps = {
-  imgSrc: string;
-  items: DetectedItem[];
-  dimensions: Dimensions;
 };
 
 export type ModelInput = {
@@ -67,9 +64,15 @@ export type Result = {
 };
 
 export type UpdateCanvasProps = {
-  canvasInstance: Canvas;
+  canvasInstance: StaticCanvas;
   videoInstance: HTMLVideoElement;
   dimensions: Dimensions;
+};
+
+export type GetImageFromVideoProps = Omit<UpdateCanvasProps, "canvasInstance">;
+export type GetImageFromVideoReturn = {
+  imgSrc: string;
+  canvasImage: FabricImage;
 };
 
 export type HandleDetectResponseProps = {

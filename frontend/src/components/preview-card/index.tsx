@@ -1,12 +1,12 @@
 import { StaticCanvas } from "fabric";
 import { useCallback } from "react";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppActions } from "@/lib/state";
+import { Label } from "../ui/label";
 
 function PreviewCard() {
   const { setCanvasInstance } = useAppActions();
-
   const getInstance = useCallback(
     (node: HTMLCanvasElement) => {
       if (node) {
@@ -20,8 +20,12 @@ function PreviewCard() {
   );
 
   return (
-    <Card className="w-full h-full pt-4">
+    <Card className="w-full h-full">
+      <CardHeader>
+        <CardTitle>Video Preview</CardTitle>
+      </CardHeader>
       <CardContent className="w-full h-full">
+        <Label>Testando</Label>
         <canvas id="previewCanvas" ref={getInstance} />
       </CardContent>
     </Card>
