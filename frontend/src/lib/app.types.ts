@@ -1,3 +1,5 @@
+import { StaticCanvas } from "fabric";
+
 export enum MODELS {
   YOLOv8n = "yolov8n",
   YOLOv8s = "yolov8s",
@@ -62,4 +64,15 @@ export type Result = {
   image_path: string;
   input: ModelInput;
   predictions: ModelPrediction[];
+};
+
+export type UpdateCanvasProps = {
+  canvasInstance: Canvas;
+  videoInstance: HTMLVideoElement;
+  dimensions: Dimensions;
+};
+
+export type HandleDetectResponseProps = {
+  data: DetectedItem[];
+  canvas: StaticCanvas;
 };

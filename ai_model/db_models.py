@@ -74,7 +74,6 @@ class ResultModel(db.Model):
     __tablename__ = "result"
 
     id = sa.Column(sa.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    image_path = sa.Column(sa.String(500), nullable=False)
     created_at = sa.Column(sa.DateTime(), nullable=False, default=datetime.now)
     input = db.relationship("InputModel", uselist=False, backref="result")
     predictions = db.relationship("PredictionModel", backref="result")
@@ -82,11 +81,10 @@ class ResultModel(db.Model):
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "image_path": self.image_path,
             "created_at": self.created_at.isoformat(),
             "input": self.input.to_dict(),
             "predictions": [p.to_dict() for p in self.predictions],
         }
 
     def __repr__(self) -> str:
-        return f"<Result Class: {self.id}, Image: {self.image_path}, Input: {self.input}, Predictions: {len(self.predictions)}"
+        return f"<Result Class: {self.id}, Input: {self.input}, Predictions: {len(self.predictions)}"

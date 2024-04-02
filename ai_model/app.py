@@ -1,14 +1,16 @@
+import io
 import os
-from uuid import uuid4
+import base64
 import numpy as np
 import cv2
 import onnxruntime as ort
-from smart_open import open
+from uuid import uuid4
 from PIL import Image
 from typing import List
+from flask_socketio import emit
 from dataclasses import dataclass
 from flask import request, jsonify
-from config import app, db
+from config import app, db, socketio
 from db_models import InputModel, PredictionModel, BoxModel, ResultModel
 
 
@@ -119,19 +121,8 @@ class Model:
 model = Model("yolov8s")
 
 
-@app.route("/detect", methods=["POST"])
-def detect():
-    image_path = request.json["image_path"]
-    confidence = request.json["confidence"]
-    iou = request.json["iou"]
-
-    with open(image_path, "rb") as f:
-        original_img = Image.open(f).convert("RGB")
-
-    predictions = model(original_img, confidence, iou)
-    detections = [p.to_dict() for p in predictions]
+def save_result(predictions, detections, iou, confidence):
     predictions_model = []
-
     if len(predictions) > 0:
         for pred in detections:
             bbox = pred.get("box")
@@ -149,14 +140,40 @@ def detect():
             predictions_model.append(new_pred)
 
     input = InputModel(iou=iou, confidence=confidence)
-    result = ResultModel(
-        input=input, image_path=image_path, predictions=predictions_model
-    )
+    result = ResultModel(input=input, predictions=predictions_model)
 
     db.session.add(result)
     db.session.commit()
 
-    return jsonify(detections)
+
+@socketio.event
+def detect_request(data):
+    print(f"<Received data: {list(data)}")
+
+    bin_image = base64.b64decode(data.get("image_path"))
+    image = io.BytesIO(bin_image)
+    confidence = data.get("confidence")
+    iou = data.get("iou")
+
+    original_img = Image.open(image).convert("RGB")
+
+    predictions = model(original_img, confidence, iou)
+    detections = [p.to_dict() for p in predictions]
+
+    emit("detect_response", detections)
+    save_result(
+        predictions=predictions, detections=detections, confidence=confidence, iou=iou
+    )
+
+
+@socketio.on("connect")
+def test_connect():
+    print("client connected")
+
+
+@socketio.on("health")
+def health():
+    emit("health_response", {"health": "Good"})
 
 
 @app.route("/health_check", methods=["GET"])
@@ -196,4 +213,9 @@ def results():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host="0.0.0.0", debug=True)
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        debug=True,
+        allow_unsafe_werkzeug=True,
+    )

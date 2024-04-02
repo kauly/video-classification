@@ -1,3 +1,4 @@
+import { StaticCanvas } from "fabric";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -14,17 +15,21 @@ type AppState = {
   capturedImage?: string;
   labeledImage?: string;
   videoInstance?: HTMLVideoElement;
+  canvasInstance?: StaticCanvas;
   selectedTab: TABS_NAMES;
   dimensions: Dimensions;
+  isSocketReady: boolean;
 };
 
 type AppActions = {
+  setCanvasInstance: (payload: StaticCanvas) => void;
   setVideoInstance: (payload: HTMLVideoElement) => void;
   setVideoUrl: (payload: string) => void;
   setCapturedImage: (payload: string) => void;
   setLabeledImage: (payload: string) => void;
   setSelectedTab: (payload: TABS_NAMES) => void;
   setDimensions: (payload: Dimensions) => void;
+  setIsSocketReady: () => void;
 };
 
 type AppStore = {
@@ -41,6 +46,8 @@ const initialState: AppState = {
   capturedImage: undefined,
   videoInstance: undefined,
   labeledImage: undefined,
+  canvasInstance: undefined,
+  isSocketReady: false,
 };
 
 const useAppStore = create<AppStore>()(
@@ -76,6 +83,16 @@ const useAppStore = create<AppStore>()(
           state.dimensions = payload;
         });
       },
+      setCanvasInstance: (payload) => {
+        set((state) => {
+          state.canvasInstance = castDraft(payload);
+        });
+      },
+      setIsSocketReady: () => {
+        set((state) => {
+          state.isSocketReady = true;
+        });
+      },
     },
   }))
 );
@@ -87,6 +104,7 @@ const useVideoInstance = () => useAppStore((state) => state.videoInstance);
 const useLabeledImage = () => useAppStore((state) => state.labeledImage);
 const useSelectedTab = () => useAppStore((state) => state.selectedTab);
 const useDimensions = () => useAppStore((state) => state.dimensions);
+const useCanvasInstance = () => useAppStore((state) => state.canvasInstance);
 
 export {
   useAppActions,
@@ -96,4 +114,5 @@ export {
   useLabeledImage,
   useSelectedTab,
   useDimensions,
+  useCanvasInstance,
 };

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { App } from "./App.tsx";
-import { Providers } from "./components/providers.tsx";
+import { Providers } from "./components/providers";
 
 import "./index.css";
 
