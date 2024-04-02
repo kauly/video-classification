@@ -2,8 +2,8 @@ import { StaticCanvas } from "fabric";
 import { useCallback } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { useAppActions, useIsVideoPlaying } from "@/lib/state";
-import { Label } from "../ui/label";
 
 function PreviewCard() {
   const isVideoReady = useIsVideoPlaying();

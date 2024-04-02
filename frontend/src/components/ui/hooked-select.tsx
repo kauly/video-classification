@@ -1,6 +1,5 @@
 import { useController } from "react-hook-form";
 
-import { FormControl } from "./form";
 import {
   Select,
   SelectContent,
@@ -40,11 +39,9 @@ function HookedSelect({
     <div className="flex flex-col space-y-2">
       <Label className={error ? "text-red-400" : ""}>{label}</Label>
       <Select onValueChange={onChange} defaultValue={value}>
-        <FormControl>
-          <SelectTrigger>
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-        </FormControl>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
         <SelectContent>
           {options.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>

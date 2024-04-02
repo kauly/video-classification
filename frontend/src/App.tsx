@@ -1,10 +1,10 @@
-import { useWebSocket } from "@/components/providers/socker-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { WizardTabs } from "./components/wizard-tabs";
-import { VideoPlayer } from "./components/video-player";
-import { PreviewCard } from "./components/preview-card";
-import { ResultsTable } from "./components/results-table";
-import { SocketStatus } from "./components/socket-status";
+import { WizardTabs } from "@/components/wizard-tabs";
+import { VideoPlayer } from "@/components/video-player";
+import { PreviewCard } from "@/components/preview-card";
+import { ResultsTable } from "@/components/results-table";
+import { SocketStatus } from "@/components/socket-status";
+import { useWebSocket } from "@/hooks/use-web-socket";
 
 function App() {
   useWebSocket();

@@ -37,5 +37,18 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
+      - VITE_SOCKET_ENDPOINT=${VITE_SOCKET_ENDPOINT}
+    command: sh -c "npm run preview"
+
+
 volumes:
   pgdata: {}

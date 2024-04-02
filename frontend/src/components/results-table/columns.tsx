@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
-import { ModelPrediction, Result } from "@/lib/app.types";
+import type { ModelPrediction, Result } from "@/lib/app.types";
 
 export const columns: ColumnDef<Result>[] = [
   {

@@ -1,8 +1,9 @@
-import { Circle } from "lucide-react";
-import { Card } from "../ui/card";
-import { useSocketStatus } from "@/lib/state";
 import clsx from "clsx";
-import { Label } from "../ui/label";
+import { Circle } from "lucide-react";
+
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { useSocketStatus } from "@/lib/state";
 
 function SocketStatus() {
   const isSocketReady = useSocketStatus();

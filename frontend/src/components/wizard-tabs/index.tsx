@@ -1,9 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SetupForm } from "@/components/setup-form";
+import { TunningForm } from "@/components/tunning-form";
 import { WIZARD_TABS } from "@/lib/app.types";
 import { useAppActions, useSelectedTab } from "@/lib/state";
-
-import { SetupForm } from "../setup-form";
-import { TunningForm } from "../tunning-form";
 
 function WizardTabs() {
   const selectedTab = useSelectedTab();

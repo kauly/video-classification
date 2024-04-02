@@ -2,6 +2,10 @@ import { useCallback } from "react";
 import ReactPlayer from "react-player/file";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { SOCKET_EVENTS, socket } from "@/hooks/use-web-socket";
+import { DetectPayload } from "@/lib/app.types";
+import { getImageFromVideo } from "@/lib/canvas";
 import {
   useAppActions,
   useCanvasInstance,
@@ -10,10 +14,6 @@ import {
   useVideoInstance,
   useVideoUrl,
 } from "@/lib/state";
-import { SOCKET_EVENTS, socket } from "../providers/socker-provider";
-import { DetectPayload } from "@/lib/app.types";
-import { getImageFromVideo } from "@/lib/canvas";
-import { useToast } from "../ui/use-toast";
 
 function VideoPlayer() {
   const { toast } = useToast();

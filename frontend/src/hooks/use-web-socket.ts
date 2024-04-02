@@ -1,8 +1,10 @@
-import { DetectResponse, Result } from "@/lib/app.types";
-import { handleDetectResponse } from "@/lib/canvas";
-import { useAppActions, useCanvasInstance } from "@/lib/state";
 import { useCallback, useEffect } from "react";
 import { io } from "socket.io-client";
+
+import { handleDetectResponse } from "@/lib/canvas";
+import { useAppActions, useCanvasInstance } from "@/lib/state";
+
+import type { DetectResponse, Result } from "@/lib/app.types";
 
 const endpoint = import.meta.env.VITE_SOCKET_ENDPOINT;
 
