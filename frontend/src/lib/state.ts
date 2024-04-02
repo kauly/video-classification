@@ -6,7 +6,7 @@ import { immer } from "zustand/middleware/immer";
 import { castDraft } from "immer";
 
 import demoVideo from "@/assets/demo-video.mp4";
-import { TunningOptions, WIZARD_TABS } from "./app.types";
+import { Result, TunningOptions, WIZARD_TABS } from "./app.types";
 
 type AppState = {
   videoUrl: string;
@@ -16,6 +16,7 @@ type AppState = {
   tunningOptions: TunningOptions;
   isSocketReady: boolean;
   isVideoPlaying: boolean;
+  tableData: Result[];
 };
 
 type AppActions = {
@@ -23,9 +24,10 @@ type AppActions = {
   setVideoInstance: (payload: HTMLVideoElement) => void;
   setVideoUrl: (payload: string) => void;
   setSelectedTab: (payload: WIZARD_TABS) => void;
-  setIsSocketReady: () => void;
+  setIsSocketReady: (payload: boolean) => void;
   setTunning: (payload: TunningOptions) => void;
   setIsVideoPlaying: (payload: boolean) => void;
+  setTableData: (payload: Result) => void;
 };
 
 type AppStore = {
@@ -39,6 +41,7 @@ const initialState: AppState = {
   canvasInstance: undefined,
   isSocketReady: false,
   isVideoPlaying: false,
+  tableData: [],
   tunningOptions: {
     confidence: 0.7,
     iou: 0.5,
@@ -69,9 +72,9 @@ const useAppStore = create<AppStore>()(
           state.canvasInstance = castDraft(payload);
         });
       },
-      setIsSocketReady: () => {
+      setIsSocketReady: (payload) => {
         set((state) => {
-          state.isSocketReady = true;
+          state.isSocketReady = payload;
         });
       },
       setIsVideoPlaying: (payload) => {
@@ -82,6 +85,15 @@ const useAppStore = create<AppStore>()(
       setTunning: (payload) => {
         set((state) => {
           state.tunningOptions = payload;
+        });
+      },
+      setTableData: (payload) => {
+        set((state) => {
+          const data = state.tableData;
+          if (data.length === 10) {
+            data.pop();
+          }
+          state.tableData = [payload, ...data];
         });
       },
     },
@@ -96,6 +108,7 @@ const useCanvasInstance = () => useAppStore((state) => state.canvasInstance);
 const useTunningOptions = () => useAppStore((state) => state.tunningOptions);
 const useSocketStatus = () => useAppStore((state) => state.isSocketReady);
 const useIsVideoPlaying = () => useAppStore((state) => state.isVideoPlaying);
+const useTableData = () => useAppStore((state) => state.tableData);
 
 export {
   useAppActions,
@@ -106,4 +119,5 @@ export {
   useTunningOptions,
   useSocketStatus,
   useIsVideoPlaying,
+  useTableData,
 };

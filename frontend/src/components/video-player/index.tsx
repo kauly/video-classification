@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useAppActions,
   useCanvasInstance,
+  useSocketStatus,
+  useTunningOptions,
   useVideoInstance,
   useVideoUrl,
 } from "@/lib/state";
@@ -18,14 +20,26 @@ function VideoPlayer() {
   const videoUrl = useVideoUrl();
   const videoInstance = useVideoInstance();
   const canvasInstance = useCanvasInstance();
+  const isSocketReady = useSocketStatus();
+  const tunning = useTunningOptions();
   const { setVideoInstance, setIsVideoPlaying } = useAppActions();
 
-  const handlePlay = () => setIsVideoPlaying(true);
-
-  const handleStop = () => setIsVideoPlaying(false);
+  const handlePlay = () => {
+    try {
+      if (!isSocketReady) {
+        throw Error("The socket is offline");
+      }
+      setIsVideoPlaying(true);
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        description: `${err}`,
+      });
+    }
+  };
 
   const handleProgress = useCallback(() => {
-    if (!canvasInstance || !videoInstance) return;
+    if (!canvasInstance || !videoInstance || !isSocketReady) return;
     if (videoInstance.paused || videoInstance.ended) return;
 
     try {
@@ -41,8 +55,8 @@ function VideoPlayer() {
       });
 
       const payload: DetectPayload = {
-        confidence: 0.7,
-        iou: 0.5,
+        confidence: tunning.confidence,
+        iou: tunning.iou,
         image_path: imgSrc.replace(/^data:image\/?[A-z]*;base64,/, ""),
       };
 
@@ -64,7 +78,7 @@ function VideoPlayer() {
         description: `Video Progress Error: ${err}`,
       });
     }
-  }, [toast, canvasInstance, videoInstance]);
+  }, [toast, canvasInstance, videoInstance, isSocketReady, tunning]);
 
   const getInstance = useCallback(
     (node: ReactPlayer) => {
@@ -94,7 +108,6 @@ function VideoPlayer() {
             url={videoUrl}
             onProgress={handleProgress}
             onPlay={handlePlay}
-            onEnded={handleStop}
             ref={getInstance}
           />
         </div>

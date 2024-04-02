@@ -1,4 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
+import dayjs from "dayjs";
 
 import { ModelPrediction, Result } from "@/lib/app.types";
 
@@ -22,9 +23,7 @@ export const columns: ColumnDef<Result>[] = [
   {
     accessorKey: "created_at",
     header: "Created At",
-  },
-  {
-    accessorKey: "image_path",
-    header: "Image",
+    cell: ({ row }) =>
+      dayjs(row.getValue("created_at")).format("DD/MM/YYYY - HH:mm:ss"),
   },
 ];

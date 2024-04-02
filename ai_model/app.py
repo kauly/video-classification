@@ -1,10 +1,8 @@
 import io
-import os
 import base64
 import numpy as np
 import cv2
 import onnxruntime as ort
-from uuid import uuid4
 from PIL import Image
 from typing import List
 from flask_socketio import emit
@@ -12,6 +10,7 @@ from dataclasses import dataclass
 from flask import request, jsonify
 from config import app, db, socketio
 from db_models import InputModel, PredictionModel, BoxModel, ResultModel
+from datetime import datetime
 
 
 @dataclass
@@ -140,7 +139,12 @@ def save_result(predictions, detections, iou, confidence):
             predictions_model.append(new_pred)
 
     input = InputModel(iou=iou, confidence=confidence)
-    result = ResultModel(input=input, predictions=predictions_model)
+    result = ResultModel(
+        input=input, predictions=predictions_model, created_at=datetime.now()
+    )
+    result_dict = result.to_dict()
+
+    emit("result_response", result_dict)
 
     db.session.add(result)
     db.session.commit()
@@ -148,8 +152,6 @@ def save_result(predictions, detections, iou, confidence):
 
 @socketio.event
 def detect_request(data):
-    print(f"<Received data: {list(data)}")
-
     bin_image = base64.b64decode(data.get("image_path"))
     image = io.BytesIO(bin_image)
     confidence = data.get("confidence")
@@ -161,19 +163,23 @@ def detect_request(data):
     detections = [p.to_dict() for p in predictions]
 
     emit("detect_response", detections)
+
     save_result(
         predictions=predictions, detections=detections, confidence=confidence, iou=iou
     )
 
 
-@socketio.on("connect")
-def test_connect():
-    print("client connected")
+@app.route("/detect", methods=["POST"])
+def detect():
+    image_path = request.json["image_path"]
+    confidence = request.json["confidence"]
+    iou = request.json["iou"]
+    with open(image_path, "rb") as f:
+        original_img = Image.open(f).convert("RGB")
+    predictions = model(original_img, confidence, iou)
+    detections = [p.to_dict() for p in predictions]
 
-
-@socketio.on("health")
-def health():
-    emit("health_response", {"health": "Good"})
+    return jsonify(detections)
 
 
 @app.route("/health_check", methods=["GET"])
@@ -189,25 +195,6 @@ def load_model():
     global model
     model = Model(model_name)
     return f"Model {model_name} is loaded"
-
-
-@app.route("/upload", methods=["POST"])
-def upload_img():
-    file = request.files.get("file")
-    print(f"File: {file}")
-    if not file:
-        return "Error: No file uploaded!", 500
-
-    file_name = f"{uuid4()}"
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
-    file.save(file_path)
-    return file_path
-
-
-@app.route("/results", methods=["GET"])
-def results():
-    result = ResultModel.query.order_by("created_at").limit(10)
-    return jsonify([r.to_dict() for r in result])
 
 
 if __name__ == "__main__":

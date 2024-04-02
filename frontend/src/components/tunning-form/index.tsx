@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { HookedInput } from "@/components/ui/hooked-input";
 import { useToast } from "@/components/ui/use-toast";
-import { useAppActions, useVideoInstance } from "@/lib/state";
+import { useAppActions, useSocketStatus, useVideoInstance } from "@/lib/state";
 import { tunningFormSchema, type TunningFormValues } from "./schema";
 
 const defaultValues: TunningFormValues = {
@@ -25,6 +25,7 @@ function TunningForm() {
   const { toast } = useToast();
   const { setTunning } = useAppActions();
   const videoInstance = useVideoInstance();
+  const isSocketReady = useSocketStatus();
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
@@ -38,8 +39,12 @@ function TunningForm() {
       if (!videoInstance) {
         throw Error("The video instance is empty");
       }
+      if (!isSocketReady) {
+        throw Error("The socket is offline");
+      }
+
       setTunning(data);
-      videoInstance?.play();
+      videoInstance.play();
     } catch (e) {
       toast({
         description: `Error: ${e}`,

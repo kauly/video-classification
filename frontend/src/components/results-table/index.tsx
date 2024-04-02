@@ -1,21 +1,18 @@
-import { getResults } from "@/lib/queries";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { useTableData } from "@/lib/state";
 
 function ResultsTable() {
-  const query = useQuery({
-    queryKey: ["getResults"],
-    queryFn: getResults,
-  });
+  const data = useTableData();
+
   return (
     <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>Results</CardTitle>
       </CardHeader>
       <CardContent>
-        <DataTable columns={columns} data={query?.data || []} />
+        <DataTable columns={columns} data={data} />
       </CardContent>
     </Card>
   );

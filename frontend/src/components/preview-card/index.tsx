@@ -2,11 +2,13 @@ import { StaticCanvas } from "fabric";
 import { useCallback } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAppActions } from "@/lib/state";
+import { useAppActions, useIsVideoPlaying } from "@/lib/state";
 import { Label } from "../ui/label";
 
 function PreviewCard() {
+  const isVideoReady = useIsVideoPlaying();
   const { setCanvasInstance } = useAppActions();
+
   const getInstance = useCallback(
     (node: HTMLCanvasElement) => {
       if (node) {
@@ -25,7 +27,9 @@ function PreviewCard() {
         <CardTitle>Video Preview</CardTitle>
       </CardHeader>
       <CardContent className="w-full h-full">
-        <Label>Testando</Label>
+        {isVideoReady ? undefined : (
+          <Label>Hit the play button to start the capture</Label>
+        )}
         <canvas id="previewCanvas" ref={getInstance} />
       </CardContent>
     </Card>
