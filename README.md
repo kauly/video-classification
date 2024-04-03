@@ -2,7 +2,7 @@
 
 ## Running the project
 
-To run the project it's necessary to create the containers and them the frontend will be available at `http://localhost:3000/`.
+To run the project it's necessary to create the containers and then the frontend will be available at `http://localhost:3000/`.
 
 ```shell
 docker compose up
