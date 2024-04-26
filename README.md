@@ -1,4 +1,4 @@
-# Full-stack take-home test for Overview.ai
+# YOLO Video classification
 
 ## Running the project
 
