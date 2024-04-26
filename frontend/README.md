@@ -1,6 +1,19 @@
-docker run -dp 127.0.0.1:5000:5000 overview-backend
-https://www.youtube.com/watch?v=AwrYfWEZJGI
-https://www.youtube.com/watch?v=zShcZJZmoyw
-docker logs -f --tail 10 container_name
-docker rm -f container_name
-docker build -t overview-backend ai_model
+# Frontend
+
+The frontend application that sent images to the backend for classification. Images are taken from the video at every 250ms, drawn at the preview Canvas and, at the same time, sent to the backend that will respond with the model output and then the boxes will be drawn if available.
+
+## Running
+
+Install the dependencies
+```
+npm i
+```
+
+Start the application
+
+```
+npm run dev
+```
+
+The application will be available at http://localhost:3000
+
